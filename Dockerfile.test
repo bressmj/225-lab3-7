@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     firefox-esr \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install GeckoDriver
@@ -25,8 +26,11 @@ RUN GECKODRIVER_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriv
     && rm /tmp/geckodriver.tar.gz \
     && chmod +x /usr/local/bin/geckodriver
 
-# Set display port to avoid crash
+# Set display port to avoid crash (ensure Firefox runs in headless mode)
 ENV DISPLAY=:99
+
+# Start Xvfb in the background (X virtual framebuffer for headless operation)
+RUN Xvfb :99 -screen 0 1280x1024x24 &
 
 # Command to run on container start
 CMD ["python", "./test_html_elements.py"]
